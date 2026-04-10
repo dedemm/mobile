@@ -1,83 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:projetomobile/app/features/denuncias/criar_denuncias_viewmodel.dart';
+import 'package:projetomobile/app/widgets/criar_denuncias_button.dart';
+import 'package:projetomobile/app/routes.dart';
+import 'package:go_router/go_router.dart';
 
-class CriarDenunciasScreen extends StatefulWidget {
-  final CriarDenunciasViewmodel criarDenunciasViewmodel;
-
-  const CriarDenunciasScreen({super.key, required this.criarDenunciasViewmodel});
-
-  @override
-  State<CriarDenunciasScreen> createState() => _CriarDenunciasScreenState();
-}
-
-class _CriarDenunciasScreenState extends State<CriarDenunciasScreen> {
-  @override
-  void initState() {
-    widget.criarDenunciasViewmodel.addListener(onSave);
-    super.initState();
-  }
+class CriarDenunciasScreen extends StatelessWidget {
+  const CriarDenunciasScreen({super.key});
 
   @override
-  void dispose() {
-    widget.criarDenunciasViewmodel.removeListener(onSave);
-    super.dispose();
-  }
-
-  void onSave(){
-    if (widget.criarDenunciasViewmodel.feedback.isNotEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.criarDenunciasViewmodel.feedback))
-      );
-    }
-  }
-
   Widget build(BuildContext context) {
-    final vm = widget.criarDenunciasViewmodel;
-    return ListenableBuilder(
-      listenable: vm,
-      builder: (context, child) {
-        return Scaffold(
-          appBar: AppBar(
-            leading: Icon(Icons.add_shopping_cart),
-            centerTitle: true,
-            title: (vm.isLoading)
-                ? Row(
-                    mainAxisAlignment: .center,
-                    children: [
-                      SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text('Loading'),
-                      ),
-                    ],
-                  )
-                : Text('Listinha'),
-          ),
-          body: Column(
+    final categorias = [
+      {
+        'title': 'Meio Ambiente',
+        'color': Colors.green,
+        'textColor': Colors.black,
+        'route': Routes.criarDenunciaMA,
+      },
+      {
+        'title': 'Trânsito e Sinalização',
+        'color': Colors.orange,
+        'textColor': Colors.black,
+        'route': Routes.criarDenunciaTS,
+      },
+      {
+        'title': 'Energia',
+        'color': Colors.yellow,
+        'textColor': Colors.black,
+        'route': Routes.criarDenunciaE,
+      },
+      {
+        'title': 'Estradas e Ruas',
+        'color': Colors.black,
+        'textColor': Colors.white,
+        'route': Routes.criarDenunciaER,
+      },
+      {
+        'title': 'Saneamento',
+        'color': Colors.blue,
+        'textColor': Colors.white,
+        'route': Routes.criarDenunciaS,
+      },
+    ];
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextField(
-                onChanged: (value) => vm.feedback = value,
-                decoration: const InputDecoration(
-                  labelText: 'Feedback',
+              SizedBox(height: 80),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  'Qual o motivo da sua \ndenúncia?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  // Simulate saving the feedback
-                  vm.feedback = 'Denúncia salva com sucesso!';
-                },
-                child: const Text('Salvar Denúncia'),
-              ),
+              SizedBox(height: 30),
+              ...categorias.map((categoria) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: CriarDenunciasButton(
+                    title: categoria['title'] as String,
+                    backgroundColor: categoria['color'] as Color,
+                    textColor: categoria['textColor'] as Color,
+                    onTap: () {
+                      context.push(categoria['route'] as String);
+                    },
+                  ),
+                );
+              }),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
