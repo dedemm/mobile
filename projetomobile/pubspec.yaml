@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   go_router: ^17.2.0
   provider: ^6.1.5+1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -19,3 +20,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Instrument Sans
+      fonts:
+        - asset: fonts/InstrumentSans.ttf
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: fonts/Inter.ttf
+          weight: 600

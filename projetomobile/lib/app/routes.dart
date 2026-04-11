@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:projetomobile/app/features/denuncias/criar_denuncias_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
@@ -10,6 +9,8 @@ class Routes {
   static const criarDenunciaE = '/criar-denuncia/energia';
   static const criarDenunciaER = '/criar-denuncia/estradas-ruas';
   static const criarDenunciaS = '/criar-denuncia/saneamento';
+  static const denuncias = '/denuncias';
+  static const perfil = '/perfil';
 }
 
 final routes = GoRouter(
