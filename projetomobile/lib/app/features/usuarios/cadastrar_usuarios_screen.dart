@@ -8,136 +8,101 @@ class CadastrarUsuariosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.all(24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment
+                  .stretch, // Estica os elementos para ocupar a largura
               children: [
-                SizedBox(height: 80),
-                Text(
+                const SizedBox(height: 40),
+                const Text(
                   'Criar conta',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Preencha os dados abaixo para se cadastrar',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                 ),
-                SizedBox(height: 32),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Nome completo',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+                const SizedBox(height: 40),
+                _buildTextField(
+                  hintText: 'Nome completo',
+                  icon: Icons.person_outline,
                 ),
-                SizedBox(height: 16),
-                TextField(
+                const SizedBox(height: 16),
+                _buildTextField(
+                  hintText: 'E-mail',
+                  icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: 'E-mail',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  hintText: 'Senha',
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  hintText: 'Confirmar senha',
+                  icon: Icons.lock_outline,
+                  isPassword: true,
+                ),
+                const SizedBox(height: 32),
+                FilledButton(
+                  onPressed: () {},
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF006FFD),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Senha',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
+                  child: const Text(
+                    'Cadastrar',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(height: 16),
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: 'Confirmar senha',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 14,
-                      horizontal: 12,
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Já possui uma conta? ',
+                      style: TextStyle(color: Colors.grey[600]),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF006FFD),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Cadastrar',
+                    GestureDetector(
+                      onTap: () {
+                        context.go(Routes.login);
+                      },
+                      child: const Text(
+                        'Entrar',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Color(0xFF006FFD),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      context.go(Routes.login);
-                    },
-                    child: Text(
-                      'Já possue uma conta? Entrar',
-                      style: TextStyle(
-                        color: Color(0xFF006FFD),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 16),
 
+                // apenas até eu configurar o fluxo do app
                 Center(
-                  child: GestureDetector(
-                    onTap: () {
+                  child: TextButton(
+                    onPressed: () {
                       context.go(Routes.perfil);
                     },
-                    child: Text(
+                    child: const Text(
                       'teste volta p perfil',
                       style: TextStyle(
-                        color: Color(0xFF006FFD),
+                        color: Colors.grey,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -146,6 +111,44 @@ class CadastrarUsuariosScreen extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required String hintText,
+    required IconData icon,
+    bool isPassword = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextFormField(
+      obscureText: isPassword,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(color: Colors.grey[500]),
+        prefixIcon: Icon(icon, color: Colors.grey[500]),
+        suffixIcon: isPassword
+            ? Icon(Icons.visibility_off_outlined, color: Colors.grey[500])
+            : null,
+        filled: true,
+        fillColor: Colors.grey[100],
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF006FFD), width: 2),
         ),
       ),
     );
