@@ -4,6 +4,27 @@ import 'package:go_router/go_router.dart';
 import 'package:projetomobile/app/routes.dart';
 import 'package:projetomobile/app/core/validators/denuncia_validator.dart';
 
+// Formatter para CEP no formato XXXXX-XXX
+class CepInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    final text = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < text.length; i++) {
+      if (i == 5) buffer.write('-');
+      buffer.write(text[i]);
+    }
+
+    final formattedText = buffer.toString();
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
+    );
+  }
+}
+
 class CriarDenunciasDetalheScreen extends StatefulWidget {
   final String titulo;
   final Color cor;
@@ -21,13 +42,19 @@ class CriarDenunciasDetalheScreen extends StatefulWidget {
 class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScreen>
     with SingleTickerProviderStateMixin {
   // Controllers para os campos
+  final TextEditingController _estadoController = TextEditingController();
+  final TextEditingController _cidadeController = TextEditingController();
   final TextEditingController _ruaController = TextEditingController();
   final TextEditingController _numeroController = TextEditingController();
+  final TextEditingController _cepController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
 
   // Estados de erro para validação
+  bool _estadoError = false;
+  bool _cidadeError = false;
   bool _ruaError = false;
   bool _numeroError = false;
+  bool _cepError = false;
   bool _descricaoError = false;
 
   // Animation para shake
@@ -52,8 +79,11 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
 
   @override
   void dispose() {
+    _estadoController.dispose();
+    _cidadeController.dispose();
     _ruaController.dispose();
     _numeroController.dispose();
+    _cepController.dispose();
     _descricaoController.dispose();
     _shakeController.dispose();
     super.dispose();
@@ -62,14 +92,20 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
   // Método para validar campos
   ValidationResult _validateFields() {
     final result = DenunciaValidator.validateFields(
+      estado: _estadoController.text,
+      cidade: _cidadeController.text,
       rua: _ruaController.text,
       numero: _numeroController.text,
+      cep: _cepController.text,
       descricao: _descricaoController.text,
     );
 
     setState(() {
+      _estadoError = result.errors.contains('estado');
+      _cidadeError = result.errors.contains('cidade');
       _ruaError = result.errors.contains('rua');
       _numeroError = result.errors.contains('numero');
+      _cepError = result.errors.contains('cep');
       _descricaoError = result.errors.contains('descricao');
     });
 
@@ -85,8 +121,11 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
         setState(() {
+          _estadoError = false;
+          _cidadeError = false;
           _ruaError = false;
           _numeroError = false;
+          _cepError = false;
           _descricaoError = false;
         });
       }
@@ -170,6 +209,33 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                             ),
                             const SizedBox(height: 16),
 
+                            // Campos Estado e Cidade com sombra
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: _buildTextFieldWithShadow(
+                                    controller: _estadoController,
+                                    hintText: 'Estado',
+                                    hasError: _estadoError,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: 3,
+                                  child: _buildTextFieldWithShadow(
+                                    controller: _cidadeController,
+                                    hintText: 'Cidade',
+                                    hasError: _cidadeError,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(50),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
                             // Campos Rua e Nº com sombra
                             Row(
                               children: [
@@ -179,6 +245,9 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                                     controller: _ruaController,
                                     hintText: 'Rua',
                                     hasError: _ruaError,
+                                    inputFormatters: [
+                                      LengthLimitingTextInputFormatter(50),
+                                    ],
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -190,11 +259,25 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(5),
                                     ],
                                     hasError: _numeroError,
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Campo CEP com sombra
+                            _buildTextFieldWithShadow(
+                              controller: _cepController,
+                              hintText: 'CEP',
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                CepInputFormatter(),
+                                LengthLimitingTextInputFormatter(9),
+                              ],
+                              hasError: _cepError,
                             ),
                             const SizedBox(height: 16),
 
@@ -221,6 +304,9 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                               hintText: 'Descreva o problema...',
                               maxLines: 5,
                               hasError: _descricaoError,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(300),
+                              ],
                             ),
                             const SizedBox(height: 20),
 
