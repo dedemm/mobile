@@ -32,7 +32,9 @@ class PerfilScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  context.go(Routes.login);
+                },
                 child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -52,48 +54,6 @@ class PerfilScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              GestureDetector(
-                onTap: () {
-                  context.go(Routes.login);
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Ir para Login',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              GestureDetector(
-                onTap: () {
-                  context.go(Routes.cadastro);
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Ir para Cadastro',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

@@ -1,143 +1,250 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projetomobile/app/routes.dart';
+import 'package:projetomobile/app/core/validators/usuario_validator.dart';
 
-class LoginUsuariosScreen extends StatelessWidget {
+class LoginUsuariosScreen extends StatefulWidget {
   const LoginUsuariosScreen({super.key});
+
+  @override
+  State<LoginUsuariosScreen> createState() => _LoginUsuariosScreenState();
+}
+
+class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+
+  bool _emailError = false;
+  bool _senhaError = false;
+  bool _obscureSenha = true;
+
+  late AnimationController _shakeController;
+  late Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 10.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10.0, end: -10.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -10.0, end: 10.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10.0, end: -5.0), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -5.0, end: 0.0), weight: 1),
+    ]).animate(_shakeController);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _senhaController.dispose();
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  void _validarPLogar() {
+    final result = UsuarioValidator.validateLoginFields(
+      email: _emailController.text,
+      senha: _senhaController.text,
+    );
+
+    setState(() {
+      _emailError = result.errors.contains('email');
+      _senhaError = result.errors.contains('senha');
+    });
+
+    if (!result.isValid) {
+      _shakeController.forward(from: 0);
+      _resetErrors();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Verifique os campos destacados.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } else {
+      context.go(Routes.denuncias);
+    }
+  }
+
+  void _resetErrors() {
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _emailError = false;
+          _senhaError = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 80),
-                const Text(
-                  'Bem-vindo',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Insira seus dados para acessar sua conta',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 40),
-                _buildTextField(
-                  hintText: 'E-mail',
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  hintText: 'Senha',
-                  icon: Icons.lock_outline,
-                  isPassword: true,
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF006FFD),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'Entrar',
+      body: AnimatedBuilder(
+        animation: _shakeAnimation,
+        builder: (context, child) {
+          return Transform.translate(
+            offset: Offset(_shakeAnimation.value, 0),
+            child: child,
+          );
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 80),
+                  const Text(
+                    'Bem-vindo',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Não possui uma conta? ',
-                      style: TextStyle(color: Colors.grey[600]),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Insira seus dados para acessar sua conta',
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                  ),
+                  const SizedBox(height: 40),
+
+                  _buildTextField(
+                    controller: _emailController,
+                    hintText: 'E-mail',
+                    icon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                    hasError: _emailError,
+                  ),
+                  const SizedBox(height: 16),
+
+                  _buildTextField(
+                    controller: _senhaController,
+                    hintText: 'Senha',
+                    icon: Icons.lock_outline,
+                    isPassword: true,
+                    hasError: _senhaError,
+                  ),
+                  const SizedBox(height: 32),
+
+                  FilledButton(
+                    onPressed: _validarPLogar,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF006FFD),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        context.go(Routes.cadastro);
-                      },
-                      child: const Text(
-                        'Criar',
-                        style: TextStyle(
-                          color: Color(0xFF006FFD),
-                          fontWeight: FontWeight.bold,
+                    child: const Text(
+                      'Entrar',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Não possui uma conta? ',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          context.go(Routes.cadastro);
+                        },
+                        child: const Text(
+                          'Criar',
+                          style: TextStyle(
+                            color: Color(0xFF006FFD),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // apenas até eu configurar o fluxo do app
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      context.go(Routes.perfil);
-                    },
-                    child: const Text(
-                      'teste volta p perfil',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
-  Widget _buildTextField({
+
+Widget _buildTextField({
+    required TextEditingController controller,
     required String hintText,
     required IconData icon,
     bool isPassword = false,
     TextInputType keyboardType = TextInputType.text,
+    bool hasError = false,
   }) {
     return TextFormField(
-      obscureText: isPassword,
+      controller: controller,
+      obscureText: isPassword ? _obscureSenha : false,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey[500]),
-        prefixIcon: Icon(icon, color: Colors.grey[500]),
+        hintStyle: TextStyle(
+          color: hasError ? Colors.red[300] : Colors.grey[500],
+        ),
+        prefixIcon: Icon(icon, color: hasError ? Colors.red : Colors.grey[500]),
         suffixIcon: isPassword
-            ? Icon(Icons.visibility_off_outlined, color: Colors.grey[500])
+            ? IconButton(
+                icon: Icon(
+                  _obscureSenha
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: Colors.grey[500],
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureSenha = !_obscureSenha;
+                  });
+                },
+              )
             : null,
         filled: true,
-        fillColor: Colors.grey[100],
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: hasError
+            ? Colors.red.withValues(alpha: 0.05)
+            : Colors.grey[100],
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[200]!, width: 1),
+          borderSide: BorderSide(
+            color: hasError ? Colors.red : Colors.grey[200]!,
+            width: hasError ? 2 : 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF006FFD), width: 2),
+          borderSide: BorderSide(
+            color: hasError ? Colors.red : const Color(0xFF006FFD),
+            width: 2,
+          ),
         ),
       ),
     );
