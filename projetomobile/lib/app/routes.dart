@@ -21,7 +21,7 @@ class Routes {
 }
 
 final routes = GoRouter(
-  initialLocation: Routes.criarDenuncia,
+  initialLocation: Routes.login,
   routes: [
     GoRoute(
       path: Routes.criarDenuncia,
