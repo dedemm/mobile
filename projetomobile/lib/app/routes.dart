@@ -2,6 +2,10 @@ import 'package:go_router/go_router.dart';
 import 'package:projetomobile/app/features/denuncias/criar_denuncias_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:projetomobile/app/features/denuncias/criar_denuncias_detalhe_screen.dart';
+import 'package:projetomobile/app/features/denuncias/denuncias_screen.dart';
+import 'package:projetomobile/app/features/usuarios/cadastrar_usuarios_screen.dart';
+import 'package:projetomobile/app/features/usuarios/login_usuarios_screen.dart';
+import 'package:projetomobile/app/features/usuarios/perfil_screen.dart';
 
 class Routes {
   static const criarDenuncia = '/criar-denuncia';
@@ -12,6 +16,8 @@ class Routes {
   static const criarDenunciaS = '/criar-denuncia/saneamento';
   static const denuncias = '/denuncias';
   static const perfil = '/perfil';
+  static const cadastro = '/cadastro';
+  static const login = '/login';
 }
 
 final routes = GoRouter(
@@ -61,6 +67,26 @@ final routes = GoRouter(
         titulo: 'Saneamento',
         cor: Color(0xFF113FA3),
       ),
+    ),
+    GoRoute(
+      path: Routes.cadastro,
+      name: Routes.cadastro,
+      builder: (context, state) => CadastrarUsuariosScreen(),
+    ),
+    GoRoute(
+      path: Routes.login,
+      name: Routes.login,
+      builder: (context, state) => LoginUsuariosScreen(),
+    ),
+    GoRoute(
+      path: Routes.perfil,
+      name: Routes.perfil,
+      builder: (context, state) => PerfilScreen(),
+    ),
+    GoRoute(
+      path: Routes.denuncias,
+      name: Routes.denuncias,
+      builder: (context, state) => DenunciasScreen(),
     ),
   ],
   errorBuilder: (context, state) {
