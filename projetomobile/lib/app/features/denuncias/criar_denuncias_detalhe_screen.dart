@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projetomobile/app/features/denuncias/denuncias_screen.dart';
 import 'package:projetomobile/app/routes.dart';
 import 'package:projetomobile/app/core/validators/denuncia_validator.dart';
 
@@ -8,7 +9,9 @@ import 'package:projetomobile/app/core/validators/denuncia_validator.dart';
 class CepInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final text = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
     final buffer = StringBuffer();
 
@@ -36,10 +39,12 @@ class CriarDenunciasDetalheScreen extends StatefulWidget {
   });
 
   @override
-  State<CriarDenunciasDetalheScreen> createState() => _CriarDenunciasDetalheScreenState();
+  State<CriarDenunciasDetalheScreen> createState() =>
+      _CriarDenunciasDetalheScreenState();
 }
 
-class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScreen>
+class _CriarDenunciasDetalheScreenState
+    extends State<CriarDenunciasDetalheScreen>
     with SingleTickerProviderStateMixin {
   // Controllers para os campos
   final TextEditingController _estadoController = TextEditingController();
@@ -166,7 +171,10 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                   children: [
                     // Cabeçalho
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 20,
+                      ),
                       child: Row(
                         children: [
                           GestureDetector(
@@ -204,7 +212,11 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: const Center(
-                                child: Icon(Icons.image, size: 40, color: Colors.grey),
+                                child: Icon(
+                                  Icons.image,
+                                  size: 40,
+                                  color: Colors.grey,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -293,7 +305,9 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                                 );
                               },
                               text: 'Usar minha localização',
-                              backgroundColor: widget.cor.withValues(alpha: 0.7),
+                              backgroundColor: widget.cor.withValues(
+                                alpha: 0.7,
+                              ),
                               textColor: textColor,
                             ),
                             const SizedBox(height: 16),
@@ -311,19 +325,28 @@ class _CriarDenunciasDetalheScreenState extends State<CriarDenunciasDetalheScree
                             const SizedBox(height: 20),
 
                             // Botão "Enviar denúncia" com sombra e InkWell
+                            // Botão "Enviar denúncia" com sombra e InkWell
                             _buildButtonWithShadow(
                               context: context,
                               onTap: () {
                                 final result = _validateFields();
                                 if (result.isValid) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Campos validados com sucesso'),
-                                      duration: Duration(seconds: 2),
-                                    ),
-                                  );
+                                  // 1. Salva a nova denúncia no nosso "Banco Mocado"
+                                  // Usamos .insert(0, ...) para a denúncia nova aparecer no topo da lista
+                                  MockDB.denuncias.insert(0, {
+                                    'categoria': widget.titulo,
+                                    'descricao': _descricaoController
+                                        .text, // Pega o texto que o usuário digitou
+                                    'status':
+                                        'Aguardando', // Status inicial padrão
+                                    'corFundo': widget.cor,
+                                    'corTexto': textColor,
+                                  });
+
+                                  // 2. Redireciona o usuário para a aba de denúncias
+                                  context.go(Routes.denuncias);
                                 } else {
-                                  _resetErrors();
+                                  _resetErrors(); // Faz a tela tremer se faltar campo
                                 }
                               },
                               text: 'ENVIAR DENÚNCIA',
