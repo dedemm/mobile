@@ -54,24 +54,6 @@ class DenunciasScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => context.pop(), // Volta pra tela anterior
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFF006FFD),
-                          width: 2,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFF006FFD),
-                        size: 24,
-                      ),
-                    ),
-                  ),
                   const SizedBox(width: 16),
                   Text(
                     'DENÚNCIAS REALIZADAS',
