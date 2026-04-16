@@ -3,9 +3,9 @@ import 'package:projetomobile/app/features/denuncias/criar_denuncias_screen.dart
 import 'package:flutter/material.dart';
 import 'package:projetomobile/app/features/denuncias/criar_denuncias_detalhe_screen.dart';
 import 'package:projetomobile/app/features/denuncias/denuncias_screen.dart';
-import 'package:projetomobile/app/features/usuarios/cadastrar_usuarios_screen.dart';
-import 'package:projetomobile/app/features/usuarios/login_usuarios_screen.dart';
-import 'package:projetomobile/app/features/usuarios/perfil_screen.dart';
+import 'package:projetomobile/app/features/usuarios/views/cadastrar_usuarios_screen.dart';
+import 'package:projetomobile/app/features/usuarios/views/login_usuarios_screen.dart';
+import 'package:projetomobile/app/features/usuarios/views/perfil_screen.dart';
 
 class Routes {
   static const criarDenuncia = '/criar-denuncia';

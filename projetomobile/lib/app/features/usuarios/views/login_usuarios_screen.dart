@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:projetomobile/app/routes.dart';
-import 'package:projetomobile/app/core/validators/usuario_validator.dart';
+import 'package:projetomobile/app/features/usuarios/viewmodels/usuario_viewmodel.dart';
 
 class LoginUsuariosScreen extends StatefulWidget {
   const LoginUsuariosScreen({super.key});
@@ -15,8 +16,6 @@ class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
 
-  bool _emailError = false;
-  bool _senhaError = false;
   bool _obscureSenha = true;
 
   late AnimationController _shakeController;
@@ -46,26 +45,21 @@ class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
     super.dispose();
   }
 
-  void _validarPLogar() {
-    final result = UsuarioValidator.validateLoginFields(
-      email: _emailController.text,
-      senha: _senhaController.text,
+  void _login() {
+    final vm = context.read<UsuarioViewModel>();
+
+    final success = vm.login(
+      _emailController.text,
+      _senhaController.text,
     );
 
-    setState(() {
-      _emailError = result.errors.contains('email');
-      _senhaError = result.errors.contains('senha');
-    });
-
-    if (!result.isValid) {
+    if (!success) {
       _shakeController.forward(from: 0);
-      _resetErrors();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Verifique os campos destacados.'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
         ),
       );
     } else {
@@ -73,19 +67,10 @@ class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
     }
   }
 
-  void _resetErrors() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _emailError = false;
-          _senhaError = false;
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<UsuarioViewModel>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: AnimatedBuilder(
@@ -124,7 +109,7 @@ class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
                     hintText: 'E-mail',
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
-                    hasError: _emailError,
+                    hasError: vm.hasError('email'),
                   ),
                   const SizedBox(height: 16),
 
@@ -133,12 +118,12 @@ class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
                     hintText: 'Senha',
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    hasError: _senhaError,
+                    hasError: vm.hasError('senha'),
                   ),
                   const SizedBox(height: 32),
 
                   FilledButton(
-                    onPressed: _validarPLogar,
+                    onPressed: _login,
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFF006FFD),
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -187,7 +172,7 @@ class _LoginUsuariosScreenState extends State<LoginUsuariosScreen>
     );
   }
 
-Widget _buildTextField({
+  Widget _buildTextField({
     required TextEditingController controller,
     required String hintText,
     required IconData icon,

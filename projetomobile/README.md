@@ -75,6 +75,7 @@ O Flutter detecta automaticamente o dispositivo disponível e instala o app nele
 - Configuração inicial do projeto
 - Criação de telas de cadastro de denuncias, tela de cadastrar usuarios, login de usuarios e tela de perfil
 - Configuração de rotas para as telas novas
+- Alteração das telas relacionadas ao usuario para seguir o padrão MVVM
 
 *Nathan*
 - Criação de telas no figma

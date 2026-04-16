@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:projetomobile/app/routes.dart';
-import 'package:projetomobile/app/core/validators/usuario_validator.dart';
+import 'package:projetomobile/app/features/usuarios/viewmodels/usuario_viewmodel.dart';
 
 class CadastrarUsuariosScreen extends StatefulWidget {
   const CadastrarUsuariosScreen({super.key});
@@ -19,10 +20,6 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
   final TextEditingController _confirmarSenhaController =
       TextEditingController();
 
-  bool _nomeError = false;
-  bool _emailError = false;
-  bool _senhaError = false;
-  bool _confirmarSenhaError = false;
   bool _obscureSenha = true;
   bool _obscureConfirmarSenha = true;
 
@@ -55,30 +52,23 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
     super.dispose();
   }
 
-  void _validarPCadastrar() {
-    final result = UsuarioValidator.validateRegister(
-      nome: _nomeController.text,
-      email: _emailController.text,
-      senha: _senhaController.text,
-      confirmarSenha: _confirmarSenhaController.text,
+  void _cadastrar() {
+    final vm = context.read<UsuarioViewModel>();
+
+    final success = vm.cadastrar(
+      nomeInput: _nomeController.text,
+      emailInput: _emailController.text,
+      senhaInput: _senhaController.text,
+      confirmarSenhaInput: _confirmarSenhaController.text,
     );
 
-    setState(() {
-      _nomeError = result.errors.contains('nome');
-      _emailError = result.errors.contains('email');
-      _senhaError = result.errors.contains('senha');
-      _confirmarSenhaError = result.errors.contains('confirmarSenha');
-    });
-
-    if (!result.isValid) {
+    if (!success) {
       _shakeController.forward(from: 0);
-      _resetErrors();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Verifique os campos destacados.'),
           backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
         ),
       );
     } else {
@@ -88,27 +78,15 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
         const SnackBar(
           content: Text('Cadastro realizado com sucesso!'),
           backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
         ),
       );
     }
   }
 
-  void _resetErrors() {
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _nomeError = false;
-          _emailError = false;
-          _senhaError = false;
-          _confirmarSenhaError = false;
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<UsuarioViewModel>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: AnimatedBuilder(
@@ -146,7 +124,7 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
                     controller: _nomeController,
                     hintText: 'Nome completo',
                     icon: Icons.person_outline,
-                    hasError: _nomeError,
+                    hasError: vm.hasError('nome'),
                   ),
                   const SizedBox(height: 16),
 
@@ -155,7 +133,7 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
                     hintText: 'E-mail',
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
-                    hasError: _emailError,
+                    hasError: vm.hasError('email'),
                   ),
                   const SizedBox(height: 16),
 
@@ -164,33 +142,33 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
                     hintText: 'Senha',
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    isObscure: _obscureSenha, 
-                    onToggleVisibility: () { 
+                    isObscure: _obscureSenha,
+                    onToggleVisibility: () {
                       setState(() {
                         _obscureSenha = !_obscureSenha;
                       });
                     },
-                    hasError: _senhaError,
+                    hasError: vm.hasError('senha'),
                   ),
-                  const SizedBox(height: 16),
 
+                  const SizedBox(height: 16),
                   _buildTextField(
                     controller: _confirmarSenhaController,
                     hintText: 'Confirmar senha',
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    isObscure: _obscureConfirmarSenha, 
-                    onToggleVisibility: () {           
+                    isObscure: _obscureConfirmarSenha,
+                    onToggleVisibility: () {
                       setState(() {
-                        _obscureConfirmarSenha = !_obscureConfirmarSenha;
+                        _obscureConfirmarSenha =
+                            !_obscureConfirmarSenha;
                       });
                     },
-                    hasError: _confirmarSenhaError,
+                    hasError: vm.hasError('confirmarSenha'),
                   ),
                   const SizedBox(height: 32),
-
                   FilledButton(
-                    onPressed: _validarPCadastrar,
+                    onPressed: _cadastrar,
                     style: FilledButton.styleFrom(
                       backgroundColor: const Color(0xFF006FFD),
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -207,7 +185,7 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
                     ),
                   ),
                   const SizedBox(height: 24),
-
+                  
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -239,7 +217,7 @@ class _CadastrarUsuariosScreenState extends State<CadastrarUsuariosScreen>
     );
   }
 
-Widget _buildTextField({
+  Widget _buildTextField({
     required TextEditingController controller,
     required String hintText,
     required IconData icon,

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:projetomobile/app/routes.dart';
+import 'package:projetomobile/app/features/usuarios/viewmodels/usuario_viewmodel.dart';
 
 class PerfilScreen extends StatelessWidget {
   const PerfilScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<UsuarioViewModel>();
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -21,18 +25,24 @@ class PerfilScreen extends StatelessWidget {
                 child: Icon(Icons.person, size: 50, color: Colors.grey[700]),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Seu Nome',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                viewModel.nome.isEmpty ? 'Seu Nome' : viewModel.nome,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'email@email.com',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                viewModel.email.isEmpty
+                    ? 'email@email.com'
+                    : viewModel.email,
+                style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 40),
               GestureDetector(
                 onTap: () {
+                  viewModel.logout();
                   context.go(Routes.login);
                 },
                 child: Container(
@@ -58,6 +68,7 @@ class PerfilScreen extends StatelessWidget {
           ),
         ),
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
         onTap: (index) {
@@ -81,7 +92,10 @@ class PerfilScreen extends StatelessWidget {
             icon: Icon(Icons.add_circle),
             label: 'Criar Denúncia',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
         ],
         selectedItemColor: Color(0xFF006FFD),
         unselectedItemColor: Colors.grey,
